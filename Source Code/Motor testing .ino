@@ -1,5 +1,5 @@
 // Motor driver contol pins NOTE: Change pin occordingly
-#define MOT_A1_PIN 7
+#define MOT_A1_PIN 8
 #define MOT_A2_PIN 9
 #define MOT_B1_PIN 10
 #define MOT_B2_PIN 11
