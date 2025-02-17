@@ -19,8 +19,6 @@ Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
 #define NUM_OF_SENSORS 8
 int sensorPins[NUM_OF_SENSORS] = {2,3,4,7,8,9,12,13};
 
-bool isRunning = false;
-
 // Sensor positions for weighted average calculation
 int sensorPositions[NUM_OF_SENSORS] = {-3, -2, -1, 0, 1, 2, 3, 4};
 
@@ -28,11 +26,11 @@ int sensorPositions[NUM_OF_SENSORS] = {-3, -2, -1, 0, 1, 2, 3, 4};
 float integral = 0;
 float lastError = 0;
 
-float kp = 0.5;
-float ki = 0.5;
-float kd = 0.5;
+float Kp = 0.5;
+float Ki = 0.5;
+float Kd = 0.5;
 
-#define baseSpeed 150
+#define BASE_SPEED 150
 
 
 // Function to read sensors and calculate error
@@ -40,7 +38,7 @@ int readSensors() {
     int weightSum = 0;
     int sensorSum = 0;
     
-    for (int i = 0; i < NUM_SENSORS; i++) {
+    for (int i = 0; i < NUM_OF_SENSORS; i++) {
         int sensorValue = digitalRead(sensorPins[i]) == LOW ? 1 : 0; // Assuming black = LOW
         weightSum += sensorValue * sensorPositions[i];
         sensorSum += sensorValue;
@@ -83,6 +81,7 @@ void followLine() {
     float derivative = error - lastError;
 
     float correction = (Kp * error) + (Ki * integral) + (Kd * derivative);
+    correction = constrain(correction, -BASE_SPEED, BASE_SPEED);
 
     int leftMotorSpeed = BASE_SPEED - correction;
     int rightMotorSpeed = BASE_SPEED + correction;
@@ -92,18 +91,19 @@ void followLine() {
     lastError = error;
 }
 
+
 void setup()
 {
     //Setup for IR sensors
-    for (int i = 0; i < NUM_SENSORS; i++) {
+    for (int i = 0; i < NUM_OF_SENSORS; i++) {
         pinMode(sensorPins[i], INPUT);
     }
     
     //Setup for Motor Driver
     pinMode(LEFT_MOTOR_FWD, OUTPUT);
-    pinMode(LEFT_MOTOR_BWD, OUTPUT);
+    pinMode(LEFT_MOTOR_BACK, OUTPUT);
     pinMode(RIGHT_MOTOR_FWD, OUTPUT);
-    pinMode(RIGHT_MOTOR_BWD, OUTPUT);
+    pinMode(RIGHT_MOTOR_BACK, OUTPUT);
 
     // Initialize OLED display
     Serial.begin(9600);  // Debugging
@@ -119,15 +119,6 @@ void setup()
     display.setCursor(0, 10);
     display.println("PID Line Follower");
     display.display();
-    
-    for (int i = 0; i < NUM_SENSORS; i++) {
-        pinMode(sensorPins[i], INPUT);
-    }
-    
-    pinMode(LEFT_MOTOR_FWD, OUTPUT);
-    pinMode(LEFT_MOTOR_BACK, OUTPUT);
-    pinMode(RIGHT_MOTOR_FWD, OUTPUT);
-    pinMode(RIGHT_MOTOR_BACK, OUTPUT);
 }
 
 void loop()
