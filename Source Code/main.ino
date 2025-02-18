@@ -1,6 +1,3 @@
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 #include <QTRSensors.h>
 
 // Motor driver control pins
@@ -8,12 +5,6 @@
 #define LEFT_MOTOR_BACK 6
 #define RIGHT_MOTOR_FWD 10
 #define RIGHT_MOTOR_BACK 11
-
-// OLED Display
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET -1
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // IR Sensor Configuration
 #define NUM_OF_SENSORS 8
@@ -79,9 +70,6 @@ void followLine() {
 }
 
 void autoCalibrate() {
-    display.setCursor(0, 45);
-    display.println("Starting Auto Calibration...");
-    display.display();
     for (int i = 0; i < 150; i++) {  // Adjust loop count for better calibration
         qtr.calibrate();  // Read and store min/max sensor values
         
@@ -93,10 +81,6 @@ void autoCalibrate() {
     
     // Stop the bot after calibration
     setMotorSpeed(0, 0);
-    display.clearDisplay();
-    display.setCursor(0, 45);
-    display.println("Calibration Complete!");
-    display.display();
 }
 
 
@@ -119,21 +103,6 @@ void setup()
     pinMode(RIGHT_MOTOR_FWD, OUTPUT);
     pinMode(RIGHT_MOTOR_BACK, OUTPUT);
 
-    // Initialize OLED display
-    Serial.begin(9600);  // Debugging
-
-    if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-        Serial.println("SSD1306 allocation failed");
-        for (;;);
-    }
-
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(WHITE);
-    display.setCursor(0, 10);
-    display.println("PID Line Follower");
-    display.display();
-
     while (digitalRead(CALIBRATE_BUTTON) == HIGH);  // Wait until button is pressed
     delay(200); // Debounce
     autoCalibrate();
@@ -147,18 +116,5 @@ void setup()
 
 void loop()
 {
-    // Update OLED Display
-    display.clearDisplay();
-    display.setCursor(0, 0);
-    display.println("Line Follower Bot");
-
-    // Show motor speed (To be updated when motor control is added)
-    display.setCursor(0, 45);
-    display.print("Speed: ");
-    display.print(BASE_SPEED);
-    display.println(" %");
-
-    display.display();
-
     followLine();
 }
