@@ -33,7 +33,6 @@ void loop()
 void forward()
 {
     Serial.println("Moving Forward");
-<<<<<<< HEAD
     // Move Motor A forward at medium speed
     digitalWrite(IN1, HIGH);
     digitalWrite(IN2, LOW);
@@ -43,17 +42,11 @@ void forward()
     digitalWrite(IN4, LOW);
     analogWrite(ENB, 150);
 
-=======
-    analogWrite(LEFT_MOTOR_FWD, 150);
-    analogWrite(RIGHT_MOTOR_FWD, 150);
->>>>>>> 6a9395d4015fb791eaa86c7dcf159258625dc64c
-
 }
 
 void backward()
 {
     Serial.println("Moving Backward");
-<<<<<<< HEAD
     // Move Motor A forward at medium speed
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, HIGH);
@@ -62,8 +55,4 @@ void backward()
     digitalWrite(IN3, LOW);
     digitalWrite(IN4, HIGH);
     analogWrite(ENB, 150);
-=======
-    analogWrite(LEFT_MOTOR_BACK,150);
-    analogWrite(RIGHT_MOTOR_BACK,150);
->>>>>>> 6a9395d4015fb791eaa86c7dcf159258625dc64c
 }
