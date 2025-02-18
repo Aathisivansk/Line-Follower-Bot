@@ -26,6 +26,10 @@ float lastError = 0;
 float Kp = 0.5, Ki = 0.5, Kd = 0.5;
 #define BASE_SPEED 150
 
+//Some more Buttons
+#define CALIBRATE_BUTTON A0
+#define START_BUTTON A1
+
 // Function to read sensors and calculate error
 int readSensors() {
     int position = qtr.readLineBlack(sensorValues);
@@ -33,7 +37,6 @@ int readSensors() {
     int error = position - desiredPosition;
     return error;
 }
-
 
 // Function to control motor speed
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
@@ -75,18 +78,40 @@ void followLine() {
     lastError = error;
 }
 
+void autoCalibrate() {
+    display.setCursor(0, 45);
+    display.println("Starting Auto Calibration...");
+    display.display();
+    for (int i = 0; i < 150; i++) {  // Adjust loop count for better calibration
+        qtr.calibrate();  // Read and store min/max sensor values
+        
+        // Make the bot move in a small circle (tweak speeds as needed)
+        setMotorSpeed(80, -80);  // Left motor forward, Right motor backward
+        
+        delay(20);  // Small delay for smooth motion
+    }
+    
+    // Stop the bot after calibration
+    setMotorSpeed(0, 0);
+    display.clearDisplay();
+    display.setCursor(0, 45);
+    display.println("Calibration Complete!");
+    display.display();
+}
+
 
 void setup()
 {
+
+    //Setup for BUTTONS
+    pinMode(CALIBRATE_BUTTON, INPUT_PULLUP);
+    pinMode(START_BUTTON, INPUT_PULLUP);
+
     //Setup for IR sensors
     for (int i = 0; i < NUM_OF_SENSORS; i++) {
         pinMode(sensorPins[i], INPUT);
     }
     
-    for (int i = 0; i < 100; i++) {
-        qtr.calibrate();
-    delay(10);
-    }
 
     //Setup for Motor Driver
     pinMode(LEFT_MOTOR_FWD, OUTPUT);
@@ -108,6 +133,16 @@ void setup()
     display.setCursor(0, 10);
     display.println("PID Line Follower");
     display.display();
+
+    while (digitalRead(CALIBRATE_BUTTON) == HIGH);  // Wait until button is pressed
+    delay(200); // Debounce
+    autoCalibrate();
+    delay(2000);  // Delay before starting the bot
+
+    // Wait for start button press
+    Serial.println("Press START button to begin line following...");
+    while (digitalRead(START_BUTTON) == HIGH);  // Wait until button is pressed
+    delay(200); // Debounce
 }
 
 void loop()
