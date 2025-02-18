@@ -28,9 +28,9 @@ void loop()
 
 void forward()
 {
-    analogWrite(LEFT_MOTOR_FWD, 150);
+    analogWrite(LEFT_MOTOR_FWD,200);
     analogWrite(LEFT_MOTOR_BACK,0);
-    analogWrite(RIGHT_MOTOR_FWD, 150);
+    analogWrite(RIGHT_MOTOR_FWD,200);
     analogWrite(RIGHT_MOTOR_BACK,0);
 
 }
