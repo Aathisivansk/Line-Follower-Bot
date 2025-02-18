@@ -29,25 +29,25 @@ void loop()
 void forward()
 {
     analogWrite(LEFT_MOTOR_FWD, 150);
-    digitalWrite(LEFT_MOTOR_BACK, LOW);
+    analogWrite(LEFT_MOTOR_BACK, 0);
     analogWrite(RIGHT_MOTOR_FWD, 150);
-    digitalWrite(RIGHT_MOTOR_BACK, LOW);
+    analogWrite(RIGHT_MOTOR_BACK, 0);
 
 }
 
 void backward()
 {
     analogWrite(LEFT_MOTOR_FWD, 0);
-    digitalWrite(LEFT_MOTOR_BACK, HIGH);
+    analogWrite(LEFT_MOTOR_BACK,1);
     analogWrite(RIGHT_MOTOR_FWD, 0);
-    digitalWrite(RIGHT_MOTOR_BACK, HIGH);
+    analogWrite(RIGHT_MOTOR_BACK,1);
 }
 
 void stopMotor()
 {
     //Turn OFF all motors
-    digitalWrite(LEFT_MOTOR_FWD, LOW);
-    digitalWrite(LEFT_MOTOR_BACK, LOW);
-    digitalWrite(RIGHT_MOTOR_FWD, LOW);
-    digitalWrite(RIGHT_MOTOR_BACK, LOW);
+    analogWrite(LEFT_MOTOR_FWD,0);
+    analogWrite(LEFT_MOTOR_BACK,0);
+    analogWrite(RIGHT_MOTOR_FWD,0);
+    analogWrite(RIGHT_MOTOR_BACK,0);
 }
