@@ -16,13 +16,13 @@ void setup()
 void loop()
 {
     forward();
-    delay(2000);
+    delay(3000);
 
     backward();
-    delay(2000);
+    delay(3000);
 
     stopMotor();
-    delay(2000);
+    delay(1000);
     
 }
 
