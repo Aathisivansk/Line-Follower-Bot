@@ -29,17 +29,17 @@ void loop()
 void forward()
 {
     analogWrite(LEFT_MOTOR_FWD, 150);
-    digitalWrite(LEFT_MOTOR_BACK, LOW);
+    analogWrite(LEFT_MOTOR_BACK, LOW);
     analogWrite(RIGHT_MOTOR_FWD, 150);
-    digitalWrite(RIGHT_MOTOR_BACK, LOW);
+    analogWrite(RIGHT_MOTOR_BACK, LOW);
 
 }
 
 void backward()
 {
-    analogWrite(LEFT_MOTOR_FWD, 0);
+    digitalWrite(LEFT_MOTOR_FWD, 0);
     digitalWrite(LEFT_MOTOR_BACK, HIGH);
-    analogWrite(RIGHT_MOTOR_FWD, 0);
+    digitalWrite(RIGHT_MOTOR_FWD, 0);
     digitalWrite(RIGHT_MOTOR_BACK, HIGH);
 }
 
