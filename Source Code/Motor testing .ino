@@ -1,16 +1,16 @@
-// Motor driver contol pins NOTE: Change pin occordingly
-#define MOT_A1_PIN 8
-#define MOT_A2_PIN 9
-#define MOT_B1_PIN 10
-#define MOT_B2_PIN 11
+// Motor driver control pins
+#define LEFT_MOTOR_FWD 5
+#define LEFT_MOTOR_BACK 6
+#define RIGHT_MOTOR_FWD 10
+#define RIGHT_MOTOR_BACK 11
 
 void setup()
 {
-    //setup all motor pins to OUTPUT
-    pinMode(MOT_A1_PIN, OUTPUT);
-    pinMode(MOT_A2_PIN, OUTPUT);
-    pinMode(MOT_B1_PIN, OUTPUT);
-    pinMode(MOT_B2_PIN, OUTPUT);
+    //Setup for Motor Driver
+    pinMode(LEFT_MOTOR_FWD, OUTPUT);
+    pinMode(LEFT_MOTOR_BACK, OUTPUT);
+    pinMode(RIGHT_MOTOR_FWD, OUTPUT);
+    pinMode(RIGHT_MOTOR_BACK, OUTPUT);
 }
 
 void loop()
@@ -28,26 +28,26 @@ void loop()
 
 void forward()
 {
-    //Turn ON Motor
-    analogWrite(MOT_A1_PIN,150);
-    digitalWrite(MOT_A2_PIN,LOW);
-    analogWrite(MOT_B1_PIN,150);
-    digitalWrite(MOT_B2_PIN,LOW);
+    analogWrite(LEFT_MOTOR_FWD, 150);
+    digitalWrite(LEFT_MOTOR_BACK, LOW);
+    analogWrite(RIGHT_MOTOR_FWD, 150);
+    digitalWrite(RIGHT_MOTOR_BACK, LOW);
+
 }
 
 void backward()
 {
-    analogWrite(MOT_A1_PIN,0);
-    analogWrite(MOT_A2_PIN,150);
-    analogWrite(MOT_B1_PIN,0);
-    analogWrite(MOT_B2_PIN,150);
+    analogWrite(LEFT_MOTOR_FWD, 0);
+    digitalWrite(LEFT_MOTOR_BACK, HIGH);
+    analogWrite(RIGHT_MOTOR_FWD, 0);
+    digitalWrite(RIGHT_MOTOR_BACK, HIGH);
 }
 
 void stopMotor()
 {
     //Turn OFF all motors
-    digitalWrite(MOT_A1_PIN, LOW);
-    digitalWrite(MOT_A2_PIN, LOW);
-    digitalWrite(MOT_B1_PIN, LOW);
-    digitalWrite(MOT_B2_PIN, LOW);
+    digitalWrite(LEFT_MOTOR_FWD, LOW);
+    digitalWrite(LEFT_MOTOR_BACK, LOW);
+    digitalWrite(RIGHT_MOTOR_FWD, LOW);
+    digitalWrite(RIGHT_MOTOR_BACK, LOW);
 }

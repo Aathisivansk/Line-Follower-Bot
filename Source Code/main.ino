@@ -15,7 +15,7 @@ uint16_t sensorValues[NUM_OF_SENSORS];
 float integral = 0;
 float lastError = 0;
 float Kp = 0.5, Ki = 0.5, Kd = 0.5;
-#define BASE_SPEED 150
+#define BASE_SPEED 100
 
 //Some more Buttons
 #define CALIBRATE_BUTTON A0
@@ -91,11 +91,9 @@ void setup()
     pinMode(CALIBRATE_BUTTON, INPUT_PULLUP);
     pinMode(START_BUTTON, INPUT_PULLUP);
 
-    //Setup for IR sensors
-    for (int i = 0; i < NUM_OF_SENSORS; i++) {
-        pinMode(sensorPins[i], INPUT);
-    }
-    
+    // configure the sensors
+    qtr.setTypeRC();
+    qtr.setSensorPins((const uint8_t[]){2, 3, 4, 7, 8, 9, 12, 13}, SensorCount);
 
     //Setup for Motor Driver
     pinMode(LEFT_MOTOR_FWD, OUTPUT);
