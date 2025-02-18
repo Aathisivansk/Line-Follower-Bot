@@ -16,17 +16,20 @@ uint16_t sensorValues[NUM_OF_SENSORS];
 // PID Control Variables
 float integral = 0;
 float lastError = 0;
-float Kp = 0.5, Ki = 0.5, Kd = 0.5;
-#define BASE_SPEED 100
+float Kp = 0.8, Ki = 0.0, Kd = 0.2;  // Tuned PID constants
+#define BASE_SPEED 150  // Base speed for straight paths
 
-//Some more Buttons
+// Buttons for calibration and start
 #define CALIBRATE_BUTTON A0
 #define START_BUTTON A5
+
+// Finish line detection threshold
+#define FINISH_THRESHOLD 800  // Adjust based on sensor readings for black square
 
 // Function to read sensors and calculate error
 int readSensors() {
     int position = qtr.readLineBlack(sensorValues);
-    int desiredPosition = 3500; // Midpoint of the sensor range
+    int desiredPosition = 3500;  // Midpoint of the sensor range
     int error = position - desiredPosition;
     return error;
 }
@@ -58,6 +61,7 @@ void setMotorSpeed(int leftSpeed, int rightSpeed) {
         analogWrite(ENB, -rightSpeed);
     }
 }
+
 // PID Controller for Line Following
 void followLine() {
     int error = readSensors();
@@ -76,6 +80,27 @@ void followLine() {
     lastError = error;
 }
 
+// Function to detect finish line (black square)
+bool detectFinishLine() {
+    for (int i = 0; i < NUM_OF_SENSORS; i++) {
+        if (sensorValues[i] > FINISH_THRESHOLD) {
+            return true;  // Finish line detected
+        }
+    }
+    return false;  // No finish line detected
+}
+
+// Function to handle intersections
+void handleIntersection() {
+    if (sensorValues[0] > FINISH_THRESHOLD && sensorValues[7] > FINISH_THRESHOLD) {
+        // Intersection detected
+        // Example: Turn left
+        setMotorSpeed(-150, 150);  // Rotate left
+        delay(500);  // Adjust delay based on turning speed
+    }
+}
+
+// Function to auto-calibrate sensors
 void autoCalibrate() {
     for (int i = 0; i < 150; i++) {  // Adjust loop count for better calibration
         qtr.calibrate();  // Read and store min/max sensor values
@@ -90,20 +115,18 @@ void autoCalibrate() {
     setMotorSpeed(0, 0);
 }
 
-
-void setup()
-{
+void setup() {
     Serial.begin(9600);
 
-    //Setup for BUTTONS
+    // Setup for BUTTONS
     pinMode(CALIBRATE_BUTTON, INPUT_PULLUP);
     pinMode(START_BUTTON, INPUT_PULLUP);
 
-    // configure the sensors
+    // Configure the sensors
     qtr.setTypeRC();
-    qtr.setSensorPins((const uint8_t[]){2, 3, 4, 7, 8, 9, 12, 13}, SensorCount);
+    qtr.setSensorPins((const uint8_t[]){2, 3, 4, 7, 8, 9, 12, 13}, NUM_OF_SENSORS);
 
-    //Setup for Motor Driver
+    // Setup for Motor Driver
     pinMode(IN1, OUTPUT);
     pinMode(IN2, OUTPUT);
     pinMode(IN3, OUTPUT);
@@ -111,18 +134,26 @@ void setup()
     pinMode(ENA, OUTPUT);
     pinMode(ENB, OUTPUT);
 
+    // Wait for calibration button press
+    Serial.println("Press CALIBRATE button to begin calibration...");
     while (digitalRead(CALIBRATE_BUTTON) == HIGH);  // Wait until button is pressed
-    delay(200); // Debounce
+    delay(200);  // Debounce
     autoCalibrate();
     delay(2000);  // Delay before starting the bot
 
     // Wait for start button press
     Serial.println("Press START button to begin line following...");
     while (digitalRead(START_BUTTON) == HIGH);  // Wait until button is pressed
-    delay(200); // Debounce
+    delay(200);  // Debounce
 }
 
-void loop()
-{
-    followLine();
+void loop() {
+    if (detectFinishLine()) {
+        // Stop the bot when finish line is detected
+        setMotorSpeed(0, 0);
+        Serial.println("Finish line detected! Bot stopped.");
+        while (true);  // Infinite loop to stop the bot
+    } else {
+        followLine();  // Continue line following
+    }
 }
