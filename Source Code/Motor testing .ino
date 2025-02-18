@@ -38,9 +38,9 @@ void forward()
 void backward()
 {
     analogWrite(LEFT_MOTOR_FWD, 0);
-    analogWrite(LEFT_MOTOR_BACK,1);
+    analogWrite(LEFT_MOTOR_BACK,200);
     analogWrite(RIGHT_MOTOR_FWD, 0);
-    analogWrite(RIGHT_MOTOR_BACK,1);
+    analogWrite(RIGHT_MOTOR_BACK,200);
 }
 
 void stopMotor()
