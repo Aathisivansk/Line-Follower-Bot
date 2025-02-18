@@ -11,6 +11,8 @@ void setup()
     pinMode(LEFT_MOTOR_BACK, OUTPUT);
     pinMode(RIGHT_MOTOR_FWD, OUTPUT);
     pinMode(RIGHT_MOTOR_BACK, OUTPUT);
+
+    Serial.begin(9600);
 }
 
 void loop()
@@ -28,6 +30,7 @@ void loop()
 
 void forward()
 {
+    Serial.print(" Forward");
     analogWrite(LEFT_MOTOR_FWD, 150);
     analogWrite(LEFT_MOTOR_BACK, 0);
     analogWrite(RIGHT_MOTOR_FWD, 150);
@@ -37,6 +40,7 @@ void forward()
 
 void backward()
 {
+    Serial.print("Backward");
     analogWrite(LEFT_MOTOR_FWD, 0);
     analogWrite(LEFT_MOTOR_BACK,1);
     analogWrite(RIGHT_MOTOR_FWD, 0);
