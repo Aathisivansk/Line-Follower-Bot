@@ -1,10 +1,12 @@
 #include <QTRSensors.h>
 
 // Motor driver control pins
-#define LEFT_MOTOR_FWD 5
-#define LEFT_MOTOR_BACK 6
-#define RIGHT_MOTOR_FWD 10
-#define RIGHT_MOTOR_BACK 11
+#define IN1 A1
+#define IN2 A2
+#define IN3 A3
+#define IN4 A4
+#define ENA 5
+#define ENB 6
 
 // IR Sensor Configuration
 #define NUM_OF_SENSORS 8
@@ -29,28 +31,33 @@ int readSensors() {
     return error;
 }
 
-// Function to control motor speed
+// Function to control motor speed and direction
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
     leftSpeed = constrain(leftSpeed, -255, 255);
     rightSpeed = constrain(rightSpeed, -255, 255);
 
+    // Control left motor
     if (leftSpeed > 0) {
-        analogWrite(LEFT_MOTOR_FWD, leftSpeed);
-        digitalWrite(LEFT_MOTOR_BACK, LOW);
+        digitalWrite(IN1, HIGH);
+        digitalWrite(IN2, LOW);
+        analogWrite(ENA, leftSpeed);
     } else {
-        analogWrite(LEFT_MOTOR_BACK, -leftSpeed);
-        digitalWrite(LEFT_MOTOR_FWD, LOW);
+        digitalWrite(IN1, LOW);
+        digitalWrite(IN2, HIGH);
+        analogWrite(ENA, -leftSpeed);
     }
 
+    // Control right motor
     if (rightSpeed > 0) {
-        analogWrite(RIGHT_MOTOR_FWD, rightSpeed);
-        digitalWrite(RIGHT_MOTOR_BACK, LOW);
+        digitalWrite(IN3, HIGH);
+        digitalWrite(IN4, LOW);
+        analogWrite(ENB, rightSpeed);
     } else {
-        analogWrite(RIGHT_MOTOR_BACK, -rightSpeed);
-        digitalWrite(RIGHT_MOTOR_FWD, LOW);
+        digitalWrite(IN3, LOW);
+        digitalWrite(IN4, HIGH);
+        analogWrite(ENB, -rightSpeed);
     }
 }
-
 // PID Controller for Line Following
 void followLine() {
     int error = readSensors();
@@ -86,6 +93,7 @@ void autoCalibrate() {
 
 void setup()
 {
+    Serial.begin(9600);
 
     //Setup for BUTTONS
     pinMode(CALIBRATE_BUTTON, INPUT_PULLUP);
@@ -96,10 +104,12 @@ void setup()
     qtr.setSensorPins((const uint8_t[]){2, 3, 4, 7, 8, 9, 12, 13}, SensorCount);
 
     //Setup for Motor Driver
-    pinMode(LEFT_MOTOR_FWD, OUTPUT);
-    pinMode(LEFT_MOTOR_BACK, OUTPUT);
-    pinMode(RIGHT_MOTOR_FWD, OUTPUT);
-    pinMode(RIGHT_MOTOR_BACK, OUTPUT);
+    pinMode(IN1, OUTPUT);
+    pinMode(IN2, OUTPUT);
+    pinMode(IN3, OUTPUT);
+    pinMode(IN4, OUTPUT);
+    pinMode(ENA, OUTPUT);
+    pinMode(ENB, OUTPUT);
 
     while (digitalRead(CALIBRATE_BUTTON) == HIGH);  // Wait until button is pressed
     delay(200); // Debounce
