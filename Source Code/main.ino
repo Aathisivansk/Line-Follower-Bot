@@ -1,55 +1,39 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <QTRSensors.h>
 
-// Motor driver contol pins NOTE: Change pin occordingly
+// Motor driver control pins
 #define LEFT_MOTOR_FWD 5
 #define LEFT_MOTOR_BACK 6
 #define RIGHT_MOTOR_FWD 10
 #define RIGHT_MOTOR_BACK 11
 
-//OLED
+// OLED Display
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
-
-//IR SENSOR PINS
+// IR Sensor Configuration
 #define NUM_OF_SENSORS 8
-int sensorPins[NUM_OF_SENSORS] = {2,3,4,7,8,9,12,13};
+QTRSensorsRC qtr;
+uint16_t sensorValues[NUM_OF_SENSORS];
 
-// Sensor positions for weighted average calculation
-int sensorPositions[NUM_OF_SENSORS] = {-3, -2, -1, 0, 1, 2, 3, 4};
-
-//PID logics Variables
+// PID Control Variables
 float integral = 0;
 float lastError = 0;
-
-float Kp = 0.5;
-float Ki = 0.5;
-float Kd = 0.5;
-
+float Kp = 0.5, Ki = 0.5, Kd = 0.5;
 #define BASE_SPEED 150
-
 
 // Function to read sensors and calculate error
 int readSensors() {
-    int weightSum = 0;
-    int sensorSum = 0;
-    
-    for (int i = 0; i < NUM_OF_SENSORS; i++) {
-        int sensorValue = digitalRead(sensorPins[i]) == LOW ? 1 : 0; // Assuming black = LOW
-        weightSum += sensorValue * sensorPositions[i];
-        sensorSum += sensorValue;
-    }
-
-    // If no sensor detects the line, return last error to prevent losing track
-    if (sensorSum == 0) return lastError;
-    
-    int error = weightSum / sensorSum;
+    int position = qtr.readLineBlack(sensorValues);
+    int desiredPosition = 3500; // Midpoint of the sensor range
+    int error = position - desiredPosition;
     return error;
 }
+
 
 // Function to control motor speed
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
@@ -99,6 +83,11 @@ void setup()
         pinMode(sensorPins[i], INPUT);
     }
     
+    for (int i = 0; i < 100; i++) {
+        qtr.calibrate();
+    delay(10);
+    }
+
     //Setup for Motor Driver
     pinMode(LEFT_MOTOR_FWD, OUTPUT);
     pinMode(LEFT_MOTOR_BACK, OUTPUT);
@@ -131,7 +120,7 @@ void loop()
     // Show motor speed (To be updated when motor control is added)
     display.setCursor(0, 45);
     display.print("Speed: ");
-    display.print(motorSpeed);
+    display.print(BASE_SPEED);
     display.println(" %");
 
     display.display();
