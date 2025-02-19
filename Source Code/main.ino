@@ -1,4 +1,4 @@
-⁷#include <QTRSensors.h>
+#include <QTRSensors.h>
 
 // Motor driver control pins
 #define LEFT_MOTOR_A1  5  // PWM-capable pin for left motor
@@ -9,14 +9,14 @@
 
 // IR Sensor Configuration
 #define NUM_OF_SENSORS 8
-QTRSensorsRC qtr;
+QTRSensors qtr;
 uint16_t sensorValues[NUM_OF_SENSORS];
 
 // PID Control Variables
 float integral = 0;
 float lastError = 0;
-float Kp = 0.8, Ki = 0.08, Kd = 0.2;
-#define BASE_SPEED 100
+float Kp = 0.8, Ki = 0.05, Kd = 0.2;
+#define BASE_SPEED 150
 
 //Some more Buttons
 #define CALIBRATE_BUTTON A0
@@ -97,16 +97,13 @@ void setup()
 
     // configure the sensors
     const uint8_t sensorPins[] = {2, 3, 4, 7, 8, 9, 12, 13};
-qtr.setTypeRC();
-qtr.setSensorPins(sensorPins, 8);  // 8 is the number of sensors
+    qtr.setTypeRC();
+    qtr.setSensorPins(sensorPins, 8);  // 8 is the number of sensors
 
     pinMode(LEFT_MOTOR_A1, OUTPUT);
     pinMode(LEFT_MOTOR_A2, OUTPUT);
     pinMode(RIGHT_MOTOR_B1, OUTPUT);
     pinMode(RIGHT_MOTOR_B2, OUTPUT);
-
-void setup() {
-    pinMode(A5, INPUT_PULLUP);  // Enable internal pull-up resistor
 
     while (digitalRead(CALIBRATE_BUTTON) == HIGH);  // Wait until calibration button is pressed
     delay(200);  // Debounce
