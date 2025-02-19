@@ -96,8 +96,9 @@ void setup()
     pinMode(START_BUTTON, INPUT_PULLUP);
 
     // configure the sensors
-    qtr.setTypeRC();
-    qtr.setSensorPins((const uint8_t[]){2, 3, 4, 7, 8, 9, 12, 13}, SensorCount);
+    const uint8_t sensorPins[] = {2, 3, 4, 7, 8, 9, 12, 13};
+qtr.setTypeRC();
+qtr.setSensorPins(sensorPins, 8);  // 8 is the number of sensors
 
     pinMode(LEFT_MOTOR_A1, OUTPUT);
     pinMode(LEFT_MOTOR_A2, OUTPUT);
