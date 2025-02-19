@@ -104,15 +104,6 @@ void setup()
     pinMode(RIGHT_MOTOR_B1, OUTPUT);
     pinMode(RIGHT_MOTOR_B2, OUTPUT);
 
-    while (digitalRead(CALIBRATE_BUTTON) == HIGH);  // Wait until button is pressed
-    delay(200); // Debounce
-    autoCalibrate();
-    delay(2000);  // Delay before starting the bot
-
-    // Wait for start button press
-    Serial.println("Press START button to begin line following...");
-    while (digitalRead(START_BUTTON) == HIGH);  // Wait until button is pressed
-    delay(200); // Debounce
 }
 void setup() {
     pinMode(A5, INPUT_PULLUP);  // Enable internal pull-up resistor
