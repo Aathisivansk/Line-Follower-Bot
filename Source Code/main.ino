@@ -8,11 +8,12 @@
 #define RIGHT_MOTOR_B2 11 // PWM-capable pin for right motor
 
 // IR Sensor Configuration
+Serial.Println("IR sensor value");
 #define NUM_OF_SENSORS 8
 QTRSensors qtr;
 uint16_t sensorValues[NUM_OF_SENSORS];
 
-// PID Control Variables
+// PID Control Variables  Serial.Println("Variable calibration");
 float integral = 0;
 float lastError = 0;
 float Kp = 0.8, Ki = 0.05, Kd = 0.2;
@@ -23,6 +24,7 @@ float Kp = 0.8, Ki = 0.05, Kd = 0.2;
 #define START_BUTTON A5
 
 // Function to read sensors and calculate error
+Serial.Println("sensor reading and error calculation");
 int readSensors() {
     int position = qtr.readLineBlack(sensorValues);
     int desiredPosition = 3500; // Midpoint of the sensor range
@@ -55,7 +57,9 @@ void setMotorSpeed(int leftSpeed, int rightSpeed) {
 }
 
 // PID Controller for Line Following
-void followLine() {
+void followLine()
+Serial.Println("PID Control");
+ {
     int error = readSensors();
     
     integral += error;
