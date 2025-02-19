@@ -8,7 +8,6 @@
 #define RIGHT_MOTOR_B2 11 // PWM-capable pin for right motor
 
 // IR Sensor Configuration
-Serial.Println("IR sensor value");
 #define NUM_OF_SENSORS 8
 QTRSensors qtr;
 uint16_t sensorValues[NUM_OF_SENSORS];
@@ -25,7 +24,7 @@ float Kp = 0.8, Ki = 0.05, Kd = 0.2;
 
 // Function to read sensors and calculate error
 int readSensors() {
-    Serial.Println("sensor reading and error calculation");
+    Serial.println("Sensor reading and error calculation");
     int position = qtr.readLineBlack(sensorValues);
     int desiredPosition = 3500; // Midpoint of the sensor range
     int error = position - desiredPosition;
@@ -34,7 +33,7 @@ int readSensors() {
 
 // Function to control motor speed and direction
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
-    Serial.Println("Setting Motor speed.......");
+    Serial.println("Setting Motor speed.......");
     leftSpeed = constrain(leftSpeed, -255, 255);
     rightSpeed = constrain(rightSpeed, -255, 255);
 
@@ -44,6 +43,7 @@ void setMotorSpeed(int leftSpeed, int rightSpeed) {
         analogWrite(LEFT_MOTOR_A2, 0);
     } else {
         analogWrite(LEFT_MOTOR_A1, 0);
+        leftSpeed = abs(leftSpeed);
         analogWrite(LEFT_MOTOR_A2, -leftSpeed);
     }
 
@@ -53,6 +53,7 @@ void setMotorSpeed(int leftSpeed, int rightSpeed) {
         analogWrite(RIGHT_MOTOR_B2, 0);
     } else {
         analogWrite(RIGHT_MOTOR_B1, 0);
+        rightSpeed = abs(rightSpeed);
         analogWrite(RIGHT_MOTOR_B2, -rightSpeed);
     }
 }
@@ -60,7 +61,7 @@ void setMotorSpeed(int leftSpeed, int rightSpeed) {
 // PID Controller for Line 
 void followLine()
  {
-     Serial.Println("PID Control");
+    Serial.println("PID Control");
     int error = readSensors();
     
     integral += error;
@@ -78,7 +79,7 @@ void followLine()
 }
 
 void autoCalibrate() {
-    Serial.Println("auto calibration");
+    Serial.println("auto calibration");
     for (int i = 0; i < 150; i++) {  // Adjust loop count for better calibration
         qtr.calibrate();  // Read and store min/max sensor values
         
@@ -118,6 +119,7 @@ void setup()
 
     // Wait for start button press
     Serial.println("Press START button to begin line following...");
+    Serial.println(digitalRead(A5));
     while (digitalRead(A5) == HIGH);  // Wait until A5 switch is pressed
     delay(200);  // Debounce
 }
