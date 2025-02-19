@@ -24,8 +24,8 @@ float Kp = 0.8, Ki = 0.05, Kd = 0.2;
 #define START_BUTTON A5
 
 // Function to read sensors and calculate error
-Serial.Println("sensor reading and error calculation");
 int readSensors() {
+    Serial.Println("sensor reading and error calculation");
     int position = qtr.readLineBlack(sensorValues);
     int desiredPosition = 3500; // Midpoint of the sensor range
     int error = position - desiredPosition;
@@ -34,6 +34,7 @@ int readSensors() {
 
 // Function to control motor speed and direction
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
+    Serial.Println("Setting Motor speed.......");
     leftSpeed = constrain(leftSpeed, -255, 255);
     rightSpeed = constrain(rightSpeed, -255, 255);
 
@@ -57,10 +58,9 @@ void setMotorSpeed(int leftSpeed, int rightSpeed) {
 }
 
 // PID Controller for Line 
-Following
 void followLine()
-Serial.Println("PID Control");
  {
+     Serial.Println("PID Control");
     int error = readSensors();
     
     integral += error;
@@ -78,7 +78,7 @@ Serial.Println("PID Control");
 }
 
 void autoCalibrate() {
-Serial.Println("auto calibration");
+    Serial.Println("auto calibration");
     for (int i = 0; i < 150; i++) {  // Adjust loop count for better calibration
         qtr.calibrate();  // Read and store min/max sensor values
         
