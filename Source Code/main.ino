@@ -1,12 +1,11 @@
 #include <QTRSensors.h>
 
 // Motor driver control pins
-#define IN1 A1
-#define IN2 A2
-#define IN3 A3
-#define IN4 A4
-#define ENA 5
-#define ENB 6
+#define LEFT_MOTOR_A1  5  // PWM-capable pin for left motor
+#define LEFT_MOTOR_A2  6  // PWM-capable pin for left motor
+
+#define RIGHT_MOTOR_B1 10  // PWM-capable pin for right motor
+#define RIGHT_MOTOR_B2 11 // PWM-capable pin for right motor
 
 // IR Sensor Configuration
 #define NUM_OF_SENSORS 8
@@ -38,26 +37,23 @@ void setMotorSpeed(int leftSpeed, int rightSpeed) {
 
     // Control left motor
     if (leftSpeed > 0) {
-        digitalWrite(IN1, HIGH);
-        digitalWrite(IN2, LOW);
-        analogWrite(ENA, leftSpeed);
+        analogWrite(LEFT_MOTOR_A1, leftSpeed);
+        analogWrite(LEFT_MOTOR_A2, 0);
     } else {
-        digitalWrite(IN1, LOW);
-        digitalWrite(IN2, HIGH);
-        analogWrite(ENA, -leftSpeed);
+        analogWrite(LEFT_MOTOR_A1, 0);
+        analogWrite(LEFT_MOTOR_A2, -leftSpeed);
     }
 
     // Control right motor
     if (rightSpeed > 0) {
-        digitalWrite(IN3, HIGH);
-        digitalWrite(IN4, LOW);
-        analogWrite(ENB, rightSpeed);
+        analogWrite(RIGHT_MOTOR_B1, rightSpeed);
+        analogWrite(RIGHT_MOTOR_B2, 0);
     } else {
-        digitalWrite(IN3, LOW);
-        digitalWrite(IN4, HIGH);
-        analogWrite(ENB, -rightSpeed);
+        analogWrite(RIGHT_MOTOR_B1, 0);
+        analogWrite(RIGHT_MOTOR_B2, -rightSpeed);
     }
 }
+
 // PID Controller for Line Following
 void followLine() {
     int error = readSensors();
@@ -103,13 +99,10 @@ void setup()
     qtr.setTypeRC();
     qtr.setSensorPins((const uint8_t[]){2, 3, 4, 7, 8, 9, 12, 13}, SensorCount);
 
-    //Setup for Motor Driver
-    pinMode(IN1, OUTPUT);
-    pinMode(IN2, OUTPUT);
-    pinMode(IN3, OUTPUT);
-    pinMode(IN4, OUTPUT);
-    pinMode(ENA, OUTPUT);
-    pinMode(ENB, OUTPUT);
+    pinMode(LEFT_MOTOR_A1, OUTPUT);
+    pinMode(LEFT_MOTOR_A2, OUTPUT);
+    pinMode(RIGHT_MOTOR_B1, OUTPUT);
+    pinMode(RIGHT_MOTOR_B2, OUTPUT);
 
     while (digitalRead(CALIBRATE_BUTTON) == HIGH);  // Wait until button is pressed
     delay(200); // Debounce
