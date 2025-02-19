@@ -77,6 +77,7 @@ Serial.Println("PID Control");
 }
 
 void autoCalibrate() {
+Serial.Println("auto calibration");
     for (int i = 0; i < 150; i++) {  // Adjust loop count for better calibration
         qtr.calibrate();  // Read and store min/max sensor values
         
