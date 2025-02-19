@@ -114,17 +114,19 @@ void setup()
     pinMode(CALIBRATE_BUTTON, INPUT_PULLUP);
     pinMode(START_BUTTON, INPUT_PULLUP);
 
+    uint8_t sensorPins[] = {2, 3, 4, 7, 8, 9, 12, 13};
+
     // configure the sensors
-    const uint8_t sensorPins[] = {2, 3, 4, 7, 8, 9, 12, 13};
     qtr.setTypeRC();
-    qtr.setSensorPins(sensorPins, 8);  // 8 is the number of sensors
+    qtr.setSensorPins(sensorPins, NUM_OF_SENSORS)
     qtr.emittersOn();
-    
+
     Serial.println("Calibrating sensors...");
     for (int i = 0; i < 400; i++) {
         qtr.calibrate();
         delay(5);
     }
+    Serial.println("Calibration complete!");
 
     pinMode(LEFT_MOTOR_A1, OUTPUT);
     pinMode(LEFT_MOTOR_A2, OUTPUT);
