@@ -26,7 +26,7 @@ float Kp = 0.8, Ki = 0.05, Kd = 0.2;
 int readSensors() {
     Serial.println("Sensor reading and error calculation");
     int position = qtr.readLineBlack(sensorValues);
-    
+
     //To print the sensor values
     Serial.print("Sensor Values: [ ");
     for (int i = 0; i < NUM_OF_SENSORS; i++) {
@@ -118,16 +118,18 @@ void setup()
     const uint8_t sensorPins[] = {2, 3, 4, 7, 8, 9, 12, 13};
     qtr.setTypeRC();
     qtr.setSensorPins(sensorPins, 8);  // 8 is the number of sensors
+    qtr.emittersOn();
+    
+    Serial.println("Calibrating sensors...");
+    for (int i = 0; i < 400; i++) {
+        qtr.calibrate();
+        delay(5);
+    }
 
     pinMode(LEFT_MOTOR_A1, OUTPUT);
     pinMode(LEFT_MOTOR_A2, OUTPUT);
     pinMode(RIGHT_MOTOR_B1, OUTPUT);
     pinMode(RIGHT_MOTOR_B2, OUTPUT);
-
-    while (digitalRead(CALIBRATE_BUTTON) == HIGH);  // Wait until calibration button is pressed
-    delay(200);  // Debounce
-    autoCalibrate();
-    delay(2000);  // Delay before starting the bot
 
     // Wait for start button press
     Serial.println("Press START button to begin line following...");
