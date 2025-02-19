@@ -34,27 +34,28 @@ int readSensors() {
 // Function to control motor speed and direction
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
     Serial.println("Setting Motor speed.......");
+
     leftSpeed = constrain(leftSpeed, -255, 255);
     rightSpeed = constrain(rightSpeed, -255, 255);
+    Serial.println(leftSpeed);
+    Serial.println(rightSpeed);
 
     // Control left motor
     if (leftSpeed > 0) {
         analogWrite(LEFT_MOTOR_A1, leftSpeed);
-        analogWrite(LEFT_MOTOR_A2, 0);
+        digitalWrite(LEFT_MOTOR_A2, LOW);
     } else {
         analogWrite(LEFT_MOTOR_A1, 0);
-        leftSpeed = abs(leftSpeed);
-        analogWrite(LEFT_MOTOR_A2, -leftSpeed);
+        analogWrite(LEFT_MOTOR_A2, abs(leftSpeed));
     }
 
     // Control right motor
     if (rightSpeed > 0) {
         analogWrite(RIGHT_MOTOR_B1, rightSpeed);
-        analogWrite(RIGHT_MOTOR_B2, 0);
+        digitalWrite(RIGHT_MOTOR_B2, LOW);
     } else {
         analogWrite(RIGHT_MOTOR_B1, 0);
-        rightSpeed = abs(rightSpeed);
-        analogWrite(RIGHT_MOTOR_B2, -rightSpeed);
+        analogWrite(RIGHT_MOTOR_B2, abs(rightSpeed));
     }
 }
 
