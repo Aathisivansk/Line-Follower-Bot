@@ -114,8 +114,20 @@ void setup()
     while (digitalRead(START_BUTTON) == HIGH);  // Wait until button is pressed
     delay(200); // Debounce
 }
+void setup() {
+    pinMode(A5, INPUT_PULLUP);  // Enable internal pull-up resistor
 
-void loop()
-{
-    followLine();
+    while (digitalRead(CALIBRATE_BUTTON) == HIGH);  // Wait until calibration button is pressed
+    delay(200);  // Debounce
+    autoCalibrate();
+    delay(2000);  // Delay before starting the bot
+
+    // Wait for start button press
+    Serial.println("Press START button to begin line following...");
+    while (digitalRead(A5) == HIGH);  // Wait until A5 switch is pressed
+    delay(200);  // Debounce
+}
+
+void loop() {
+    followLine();  // Start line-following once the switch is pressed
 }
