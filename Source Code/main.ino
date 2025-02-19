@@ -26,6 +26,17 @@ float Kp = 0.8, Ki = 0.05, Kd = 0.2;
 int readSensors() {
     Serial.println("Sensor reading and error calculation");
     int position = qtr.readLineBlack(sensorValues);
+    
+    //To print the sensor values
+    Serial.print("Sensor Values: [ ");
+    for (int i = 0; i < NUM_OF_SENSORS; i++) {
+        Serial.print(sensorValues[i]);
+        if (i < NUM_OF_SENSORS - 1) {
+            Serial.print(", ");
+        }
+    }
+    Serial.println(" ]");
+
     int desiredPosition = 3500; // Midpoint of the sensor range
     int error = position - desiredPosition;
     return error;
