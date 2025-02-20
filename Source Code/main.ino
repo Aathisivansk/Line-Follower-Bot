@@ -66,19 +66,21 @@ void loop() {
 }
 
 void calibrateSensors() {
-    for (int i = 0; i < 100; i++) {
-        if (i % 20 < 10) {
-            moveLeft();
-        } else {
-            moveRight();
-        }
-        qtr.calibrate();
-        delay(100);
+  // Replace moveLeft/moveRight with forward/backward
+  for (int i = 0; i < 100; i++) {
+    if (i % 20 < 10) {
+      setMotorSpeed(100, 100); // Forward
+    } else {
+      setMotorSpeed(-100, -100); // Backward
     }
-    stopMotors();
+    qtr.calibrate();
+    delay(10);
+  }
+  stopMotors();
 }
 
 void followLine() {
+    
     int position = qtr.readLineBlack(sensorValues);
     int error = position - 3500;
     integral += error;
@@ -87,6 +89,17 @@ void followLine() {
     lastError = error;
     
     int turn = (Kp * error) + (Ki * integral) + (Kd * derivative);
+    Serial.print("Sensor Values: ");
+    for (int i = 0; i < NUM_OF_SENSORS; i++) {
+        Serial.print(sensorValues[i]);
+        Serial.print(" ");
+    }
+    Serial.println();
+    
+    Serial.print("Position: ");
+    Serial.println(position);
+    Serial.print("Error: ");
+    Serial.println(turn);
     int leftSpeed = BASE_SPEED + turn;
     int rightSpeed = BASE_SPEED - turn;
     
@@ -95,7 +108,6 @@ void followLine() {
 
 // Function to control motor speed and direction
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
-    Serial.println("Setting Motor speed.......");
 
     leftSpeed = constrain(leftSpeed, -75, 200);
     rightSpeed = constrain(rightSpeed, -75, 200);
