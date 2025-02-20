@@ -9,7 +9,7 @@
 
 // IR Sensor Configuration
 #define NUM_OF_SENSORS 8
-QTRSensorsAnalog qtr((unsigned char[]){A1, A2, A3, A4, A5, A6, A7, A8}, NUM_OF_SENSORS);\
+QTRSensorsAnalog qtr((unsigned char[]){A0, A1, A2, A3, A4, A5, A6, A7}, NUM_OF_SENSORS);\
 #define LEDON_PIN 7  // Connect LEDON pin to D7
 uint16_t sensorValues[NUM_OF_SENSORS];
 
