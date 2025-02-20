@@ -26,7 +26,7 @@ uint16_t sensorValues[NUM_OF_SENSORS];
 float integral = 0;
 float lastError = 0;
 float Kp = 1.0, Ki = 0.0, Kd = 1.4;
-#define BASE_SPEED 150
+#define BASE_SPEED 175
 
 // Buttons
 #define CALIBRATE_BUTTON 2
@@ -69,9 +69,9 @@ void calibrateSensors() {
   // Replace moveLeft/moveRight with forward/backward
   for (int i = 0; i < 100; i++) {
     if (i % 20 < 10) {
-      setMotorSpeed(100, 100); // Forward
+      setMotorSpeed(150, 150); // Forward
     } else {
-      setMotorSpeed(-100, -100); // Backward
+      setMotorSpeed(-150,-150); // Backward
     }
     qtr.calibrate();
     delay(10);
