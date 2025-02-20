@@ -64,17 +64,29 @@ void loop() {
 }
 
 void calibrateSensors() {
-  // Replace moveLeft/moveRight with forward/backward
-  for (int i = 0; i < 150; i++) {
-    if (i % 20 < 10) {
-      setMotorSpeed(150, 150); // Forward
-    } else {
-      setMotorSpeed(-150,-150); // Backward
+    Serial.println("Calibrating Sensors...");
+    
+    for (int i = 0; i < 250; i++) {
+        if (i % 20 < 10) {
+            setMotorSpeed(100, 100); // Slow Forward
+        } else {
+            setMotorSpeed(-100, -100); // Slow Backward
+        }
+        qtr.calibrate();  // Ensures sensors get proper min/max values
+        delay(10);
     }
-    qtr.calibrate();
-    delay(10);
-  }
-  stopMotors();
+    stopMotors();
+    Serial.println("Calibration Complete!");
+
+    // Print the calibrated min/max values for debugging
+    Serial.println("Min/Max Sensor Values After Calibration:");
+    for (int i = 0; i < NUM_OF_SENSORS; i++) {
+        Serial.print(qtr.calibratedMinimumOn[i]);
+        Serial.print("/");
+        Serial.print(qtr.calibratedMaximumOn[i]);
+        Serial.print(" ");
+    }
+    Serial.println();
 }
 
 void followLine() {
