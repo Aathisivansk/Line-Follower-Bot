@@ -45,9 +45,7 @@ void setup() {
     pinMode(LEFT_MOTOR_A1, OUTPUT);
     pinMode(LEFT_MOTOR_A2, OUTPUT);
     pinMode(RIGHT_MOTOR_B1, OUTPUT);
-    pinMode(RIGHT_MOTOR_B2, OUTPUT);
-
-    
+    pinMode(RIGHT_MOTOR_B2, OUTPUT);   
 }
 
 void loop() {
