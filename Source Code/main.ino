@@ -9,37 +9,67 @@
 
 // IR Sensor Configuration
 #define NUM_OF_SENSORS 8
-QTRSensors qtr;
+QTRSensorsAnalog qtr((unsigned char[]){A1, A2, A3, A4, A5, A6, A7, A8}, NUM_OF_SENSORS);\
+#define LEDON_PIN 7  // Connect LEDON pin to D7
 uint16_t sensorValues[NUM_OF_SENSORS];
 
-// PID Control Variables  Serial.Println("Variable calibration");
+// PID Control Variables
 float integral = 0;
 float lastError = 0;
 float Kp = 0.8, Ki = 0.05, Kd = 0.2;
 #define BASE_SPEED 150
 
-//Some more Buttons
-#define CALIBRATE_BUTTON A0
-#define START_BUTTON A5
+// Buttons
+#define CALIBRATE_BUTTON 2
+#define START_BUTTON 3
 
-// Function to read sensors and calculate error
-int readSensors() {
-    Serial.println("Sensor reading and error calculation");
-    int position = qtr.readLineBlack(sensorValues);
+void setup() {
+    Serial.begin(9600);
+    pinMode(LEDON_PIN, OUTPUT);
+    digitalWrite(LEDON_PIN, HIGH);
+    pinMode(CALIBRATE_BUTTON, INPUT_PULLUP);
+    pinMode(START_BUTTON, INPUT_PULLUP);
+    pinMode(LEFT_MOTOR_A1, OUTPUT);
+    pinMode(LEFT_MOTOR_A2, OUTPUT);
+    pinMode(RIGHT_MOTOR_B1, OUTPUT);
+    pinMode(RIGHT_MOTOR_B2, OUTPUT);
 
-    //To print the sensor values
-    Serial.print("Sensor Values: [ ");
-    for (int i = 0; i < NUM_OF_SENSORS; i++) {
-        Serial.print(sensorValues[i]);
-        if (i < NUM_OF_SENSORS - 1) {
-            Serial.print(", ");
-        }
+    Serial.println("Starting Calibration...");
+    calibrateSensors();
+    Serial.println("Calibration Complete!");
+}
+
+void loop() {
+    if (digitalRead(START_BUTTON) == LOW) {
+        followLine();
     }
-    Serial.println(" ]");
+}
 
-    int desiredPosition = 3500; // Midpoint of the sensor range
-    int error = position - desiredPosition;
-    return error;
+void calibrateSensors() {
+    for (int i = 0; i < 100; i++) {
+        if (i % 20 < 10) {
+            moveLeft();
+        } else {
+            moveRight();
+        }
+        qtr.calibrate();
+        delay(100);
+    }
+    stopMotors();
+}
+
+void followLine() {
+    int position = qtr.readLineBlack(sensorValues);
+    int error = position - 3500;
+    integral += error;
+    float derivative = error - lastError;
+    lastError = error;
+    
+    int turn = (Kp * error) + (Ki * integral) + (Kd * derivative);
+    int leftSpeed = BASE_SPEED + turn;
+    int rightSpeed = BASE_SPEED - turn;
+    
+    setMotorSpeed(leftSpeed, rightSpeed);
 }
 
 // Function to control motor speed and direction
@@ -70,42 +100,6 @@ void setMotorSpeed(int leftSpeed, int rightSpeed) {
     }
 }
 
-// PID Controller for Line 
-void followLine()
- {
-    Serial.println("PID Control");
-    int error = readSensors();
-    
-    integral += error;
-    float derivative = error - lastError;
-
-    float correction = (Kp * error) + (Ki * integral) + (Kd * derivative);
-    correction = constrain(correction, -BASE_SPEED, BASE_SPEED);
-
-    int leftMotorSpeed = BASE_SPEED - correction;
-    int rightMotorSpeed = BASE_SPEED + correction;
-
-    setMotorSpeed(leftMotorSpeed, rightMotorSpeed);
-
-    lastError = error;
-}
-
-void autoCalibrate() {
-    Serial.println("auto calibration");
-    for (int i = 0; i < 100; i++) { // 100 iterations for calibration
-        if (i % 20 < 10) {
-            moveLeft();
-        } else {
-            moveRight();
-        }
-        
-        qtr.calibrate();  // Collect sensor data
-        delay(100);
-    }
-    
-    stopMotors();
-}
-
 void moveLeft() {
     digitalWrite(LEFT_MOTOR_A1, LOW);
     digitalWrite(LEFT_MOTOR_A2, HIGH);
@@ -125,37 +119,4 @@ void stopMotors() {
     digitalWrite(LEFT_MOTOR_A2, LOW);
     digitalWrite(RIGHT_MOTOR_B1, LOW);
     digitalWrite(RIGHT_MOTOR_B2, LOW);
-}
-
-
-void setup()
-{
-    Serial.begin(9600);
-
-    //Setup for BUTTONS
-    pinMode(CALIBRATE_BUTTON, INPUT_PULLUP);
-    pinMode(START_BUTTON, INPUT_PULLUP);
-
-    uint8_t sensorPins[] = {2, 3, 4, 7, 8, 9, 12, 13};
-
-    // configure the sensors
-    qtr.setTypeRC();
-    qtr.setSensorPins(sensorPins, NUM_OF_SENSORS)
-    qtr.emittersOn();
-    autoCalibrate();
-
-    pinMode(LEFT_MOTOR_A1, OUTPUT);
-    pinMode(LEFT_MOTOR_A2, OUTPUT);
-    pinMode(RIGHT_MOTOR_B1, OUTPUT);
-    pinMode(RIGHT_MOTOR_B2, OUTPUT);
-
-    // Wait for start button press
-    Serial.println("Press START button to begin line following...");
-    Serial.println(digitalRead(A5));
-    while (digitalRead(A5) == HIGH);  // Wait until A5 switch is pressed
-    delay(200);  // Debounce
-}
-
-void loop() {
-    followLine();  // Start line-following once the switch is pressed
 }
