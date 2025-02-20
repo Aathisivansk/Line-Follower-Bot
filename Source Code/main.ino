@@ -25,7 +25,7 @@ uint16_t sensorValues[NUM_OF_SENSORS];
 // PID Control Variables
 float integral = 0;
 float lastError = 0;
-float Kp = 0.8, Ki = 0.008, Kd = 0.2;
+float Kp = 0.7, Ki = 0, Kd = 1.2;
 #define BASE_SPEED 150
 
 // Buttons
@@ -80,15 +80,17 @@ void calibrateSensors() {
 }
 
 void followLine() {
+
     
     int position = qtr.readLineBlack(sensorValues);
+    handleIntersection();
     int error = position - 3500;
     integral += error;
-    integral = constrain(integral, -1000, 1000); // Adjust limits as needed
+    integral = constrain(integral, -50, 50); // Adjust limits as needed
     float derivative = error - lastError;
     lastError = error;
     
-    int turn = (Kp * error) + (Ki * integral) + (Kd * derivative);
+    int correction = (Kp * error) + (Ki * integral) + (Kd * derivative);
     Serial.print("Sensor Values: ");
     for (int i = 0; i < NUM_OF_SENSORS; i++) {
         Serial.print(sensorValues[i]);
@@ -99,18 +101,41 @@ void followLine() {
     Serial.print("Position: ");
     Serial.println(position);
     Serial.print("Error: ");
-    Serial.println(turn);
-    int leftSpeed = BASE_SPEED + turn;
-    int rightSpeed = BASE_SPEED - turn;
+    Serial.println(correction);
+    int leftSpeed = BASE_SPEED + correction;
+    int rightSpeed = BASE_SPEED - correction;
     
     setMotorSpeed(leftSpeed, rightSpeed);
+}
+
+void handleIntersection() {
+    if (sensorValues[0] > 900 && sensorValues[7] > 900) {  // Adjust threshold as needed
+        Serial.println("Intersection detected!");
+        
+        // Decide action: turn, stop, or move forward
+        setMotorSpeed(100, 100); // Slow down before decision
+        delay(200); // Short delay for stability
+        
+        // Example: If left sensor sees a path, turn left
+        if (sensorValues[0] < 800) {
+            Serial.println("Turning Left");
+            setMotorSpeed(-100, 100); // Left turn
+            delay(400);
+        } else if (sensorValues[7] < 800) {
+            Serial.println("Turning Right");
+            setMotorSpeed(100, -100); // Right turn
+            delay(400);
+        } else {
+            Serial.println("Going Straight");
+        }
+    }
 }
 
 // Function to control motor speed and direction
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
 
-    leftSpeed = constrain(leftSpeed, -75, 200);
-    rightSpeed = constrain(rightSpeed, -75, 200);
+    leftSpeed = constrain(leftSpeed, -100, 255);
+    rightSpeed = constrain(rightSpeed, -100, 255);
     Serial.println(leftSpeed);
     Serial.println(rightSpeed);
 
