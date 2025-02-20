@@ -65,7 +65,7 @@ void loop() {
 
 void calibrateSensors() {
   // Replace moveLeft/moveRight with forward/backward
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < 150; i++) {
     if (i % 20 < 10) {
       setMotorSpeed(150, 150); // Forward
     } else {
@@ -81,7 +81,6 @@ void followLine() {
 
     
     int position = qtr.readLineBlack(sensorValues);
-    handleIntersection();
     int error = position - 3500;
     integral += error;
     integral = constrain(integral, -50, 50); // Adjust limits as needed
@@ -106,28 +105,7 @@ void followLine() {
     setMotorSpeed(leftSpeed, rightSpeed);
 }
 
-void handleIntersection() {
-    if (sensorValues[0] > 900 && sensorValues[7] > 900) {  // Adjust threshold as needed
-        Serial.println("Intersection detected!");
-        
-        // Decide action: turn, stop, or move forward
-        setMotorSpeed(100, 100); // Slow down before decision
-        delay(200); // Short delay for stability
-        
-        // Example: If left sensor sees a path, turn left
-        if (sensorValues[0] < 800) {
-            Serial.println("Turning Left");
-            setMotorSpeed(-100, 100); // Left turn
-            delay(400);
-        } else if (sensorValues[7] < 800) {
-            Serial.println("Turning Right");
-            setMotorSpeed(100, -100); // Right turn
-            delay(400);
-        } else {
-            Serial.println("Going Straight");
-        }
-    }
-}
+
 
 // Function to control motor speed and direction
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
