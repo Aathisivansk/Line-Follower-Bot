@@ -46,8 +46,8 @@ int readSensors() {
 void setMotorSpeed(int leftSpeed, int rightSpeed) {
     Serial.println("Setting Motor speed.......");
 
-    leftSpeed = constrain(leftSpeed, -255, 255);
-    rightSpeed = constrain(rightSpeed, -255, 255);
+    leftSpeed = constrain(leftSpeed, -75, 200);
+    rightSpeed = constrain(rightSpeed, -75, 200);
     Serial.println(leftSpeed);
     Serial.println(rightSpeed);
 
@@ -92,17 +92,39 @@ void followLine()
 
 void autoCalibrate() {
     Serial.println("auto calibration");
-    for (int i = 0; i < 150; i++) {  // Adjust loop count for better calibration
-        qtr.calibrate();  // Read and store min/max sensor values
+    for (int i = 0; i < 100; i++) { // 100 iterations for calibration
+        if (i % 20 < 10) {
+            moveLeft();
+        } else {
+            moveRight();
+        }
         
-        // Make the bot move in a small circle (tweak speeds as needed)
-        setMotorSpeed(80, -80);  // Left motor forward, Right motor backward
-        
-        delay(20);  // Small delay for smooth motion
+        qtr.calibrate();  // Collect sensor data
+        delay(100);
     }
     
-    // Stop the bot after calibration
-    setMotorSpeed(0, 0);
+    stopMotors();
+}
+
+void moveLeft() {
+    digitalWrite(LEFT_MOTOR_A1, LOW);
+    digitalWrite(LEFT_MOTOR_A2, HIGH);
+    digitalWrite(RIGHT_MOTOR_B1, HIGH);
+    digitalWrite(RIGHT_MOTOR_B2, LOW);
+}
+
+void moveRight() {
+    digitalWrite(LEFT_MOTOR_A1, HIGH);
+    digitalWrite(LEFT_MOTOR_A2, LOW);
+    digitalWrite(RIGHT_MOTOR_B1, LOW);
+    digitalWrite(RIGHT_MOTOR_B2, HIGH);
+}
+
+void stopMotors() {
+    digitalWrite(LEFT_MOTOR_A1, LOW);
+    digitalWrite(LEFT_MOTOR_A2, LOW);
+    digitalWrite(RIGHT_MOTOR_B1, LOW);
+    digitalWrite(RIGHT_MOTOR_B2, LOW);
 }
 
 
@@ -120,13 +142,7 @@ void setup()
     qtr.setTypeRC();
     qtr.setSensorPins(sensorPins, NUM_OF_SENSORS)
     qtr.emittersOn();
-
-    Serial.println("Calibrating sensors...");
-    for (int i = 0; i < 400; i++) {
-        qtr.calibrate();
-        delay(5);
-    }
-    Serial.println("Calibration complete!");
+    autoCalibrate();
 
     pinMode(LEFT_MOTOR_A1, OUTPUT);
     pinMode(LEFT_MOTOR_A2, OUTPUT);
