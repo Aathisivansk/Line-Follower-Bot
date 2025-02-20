@@ -25,7 +25,7 @@ uint16_t sensorValues[NUM_OF_SENSORS];
 // PID Control Variables
 float integral = 0;
 float lastError = 0;
-float Kp = 0.7, Ki = 0, Kd = 1.2;
+float Kp = 1.0, Ki = 0.0, Kd = 1.4;
 #define BASE_SPEED 150
 
 // Buttons
