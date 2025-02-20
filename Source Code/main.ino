@@ -16,7 +16,7 @@ uint16_t sensorValues[NUM_OF_SENSORS];
 // PID Control Variables
 float integral = 0;
 float lastError = 0;
-float Kp = 0.8, Ki = 0.05, Kd = 0.2;
+float Kp = 0.8, Ki = 0.008, Kd = 0.2;
 #define BASE_SPEED 150
 
 // Buttons
@@ -34,15 +34,22 @@ void setup() {
     pinMode(RIGHT_MOTOR_B1, OUTPUT);
     pinMode(RIGHT_MOTOR_B2, OUTPUT);
 
-    Serial.println("Starting Calibration...");
-    calibrateSensors();
-    Serial.println("Calibration Complete!");
+    
 }
 
 void loop() {
-    if (digitalRead(START_BUTTON) == LOW) {
-        followLine();
+  if (digitalRead(CALIBRATE_BUTTON) == LOW) {
+    Serial.println("Starting Calibration...");
+    calibrateSensors();
+    Serial.println("Calibration Complete!");
+  }
+  if (digitalRead(START_BUTTON) == LOW) {
+    while (digitalRead(START_BUTTON) == LOW); // Debounce
+    while (true) { // Continuous line following
+      followLine();
+      if (digitalRead(START_BUTTON) == LOW) break; // Exit on button press
     }
+  }
 }
 
 void calibrateSensors() {
@@ -62,6 +69,7 @@ void followLine() {
     int position = qtr.readLineBlack(sensorValues);
     int error = position - 3500;
     integral += error;
+    integral = constrain(integral, -1000, 1000); // Adjust limits as needed
     float derivative = error - lastError;
     lastError = error;
     
