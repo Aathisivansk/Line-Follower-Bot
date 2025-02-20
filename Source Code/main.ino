@@ -9,8 +9,17 @@
 
 // IR Sensor Configuration
 #define NUM_OF_SENSORS 8
-QTRSensorsAnalog qtr((unsigned char[]){A0, A1, A2, A3, A4, A5, A6, A7}, NUM_OF_SENSORS);\
+QTRSensors qtr;
 #define LEDON_PIN 7  // Connect LEDON pin to D7
+#define ANALOG_PIN1 A0
+#define ANALOG_PIN2 A1
+#define ANALOG_PIN3 A2
+#define ANALOG_PIN4 A3
+#define ANALOG_PIN5 A4
+#define ANALOG_PIN6 A5
+#define ANALOG_PIN7 A6
+#define ANALOG_PIN8 A7
+
 uint16_t sensorValues[NUM_OF_SENSORS];
 
 // PID Control Variables
@@ -29,6 +38,10 @@ void setup() {
     digitalWrite(LEDON_PIN, HIGH);
     pinMode(CALIBRATE_BUTTON, INPUT_PULLUP);
     pinMode(START_BUTTON, INPUT_PULLUP);
+
+    qtr.setTypeAnalog();
+    qtr.setSensorPins((const uint8_t[]){ANALOG_PIN1,ANALOG_PIN2,ANALOG_PIN3,ANALOG_PIN4,ANALOG_PIN5,ANALOG_PIN6,ANALOG_PIN7,ANALOG_PIN8}, NUM_OF_SENSORS);
+
     pinMode(LEFT_MOTOR_A1, OUTPUT);
     pinMode(LEFT_MOTOR_A2, OUTPUT);
     pinMode(RIGHT_MOTOR_B1, OUTPUT);
